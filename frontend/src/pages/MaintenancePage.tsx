@@ -24,6 +24,7 @@ export default function MaintenancePage() {
     status: 'COMPLETED',
     maintenanceDate: new Date().toISOString().split('T')[0],
   });
+  const [selectedEquipmentId, setSelectedEquipmentId] = useState<number | undefined>();
 
   useEffect(() => {
     loadData();
@@ -47,7 +48,9 @@ export default function MaintenancePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const selectedEquipment = equipment.find(eq => eq.equipmentId === Number(formData.equipment));
+      const selectedEquipment = selectedEquipmentId
+        ? equipment.find(eq => eq.equipmentId === selectedEquipmentId)
+        : undefined;
       const data = { ...formData, equipment: selectedEquipment } as MaintenanceRecord;
 
       if (editingRecord?.recordId) {
@@ -61,6 +64,7 @@ export default function MaintenancePage() {
       loadData();
     } catch (error) {
       console.error('Failed to save record:', error);
+      alert('Failed to save maintenance record. Please try again.');
     }
   };
 
@@ -85,8 +89,8 @@ export default function MaintenancePage() {
       cost: record.cost,
       performedBy: record.performedBy,
       nextScheduledDate: record.nextScheduledDate,
-      equipment: record.equipment?.equipmentId,
     });
+    setSelectedEquipmentId(record.equipment?.equipmentId);
     setDialogOpen(true);
   };
 
@@ -97,6 +101,7 @@ export default function MaintenancePage() {
       status: 'COMPLETED',
       maintenanceDate: new Date().toISOString().split('T')[0],
     });
+    setSelectedEquipmentId(undefined);
   };
 
   const getStatusColor = (status: string) => {
@@ -136,8 +141,8 @@ export default function MaintenancePage() {
                 <div className="space-y-2">
                   <Label htmlFor="equipment">Equipment *</Label>
                   <Select
-                    value={formData.equipment?.toString()}
-                    onValueChange={(value) => setFormData({ ...formData, equipment: Number(value) })}
+                    value={selectedEquipmentId?.toString()}
+                    onValueChange={(value) => setSelectedEquipmentId(Number(value))}
                     required
                   >
                     <SelectTrigger>
@@ -266,7 +271,14 @@ export default function MaintenancePage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {records.map((record) => (
+              {records.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center py-8 text-gray-500">
+                    No maintenance records found. Click "Add Maintenance Record" to get started.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                records.map((record) => (
                 <TableRow key={record.recordId}>
                   <TableCell className="font-medium">{record.equipment?.name}</TableCell>
                   <TableCell>{record.type}</TableCell>
@@ -292,7 +304,8 @@ export default function MaintenancePage() {
                     </div>
                   </TableCell>
                 </TableRow>
-              ))}
+              ))
+              )}
             </TableBody>
           </Table>
         </CardContent>

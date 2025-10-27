@@ -27,6 +27,7 @@ export default function MedicinesPage() {
     description: '',
     batchNumber: '',
   });
+  const [selectedSupplierId, setSelectedSupplierId] = useState<number | undefined>();
 
   useEffect(() => {
     loadData();
@@ -50,7 +51,9 @@ export default function MedicinesPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const selectedSupplier = suppliers.find(s => s.supplierId === Number(formData.supplier));
+      const selectedSupplier = selectedSupplierId 
+        ? suppliers.find(s => s.supplierId === selectedSupplierId)
+        : undefined;
       const data = { ...formData, supplier: selectedSupplier } as Medicine;
 
       if (editingMedicine?.medicineId) {
@@ -64,6 +67,7 @@ export default function MedicinesPage() {
       loadData();
     } catch (error) {
       console.error('Failed to save medicine:', error);
+      alert('Failed to save medicine. Please try again.');
     }
   };
 
@@ -88,8 +92,8 @@ export default function MedicinesPage() {
       expiryDate: medicine.expiryDate,
       description: medicine.description,
       batchNumber: medicine.batchNumber,
-      supplier: medicine.supplier?.supplierId,
     });
+    setSelectedSupplierId(medicine.supplier?.supplierId);
     setDialogOpen(true);
   };
 
@@ -104,6 +108,7 @@ export default function MedicinesPage() {
       description: '',
       batchNumber: '',
     });
+    setSelectedSupplierId(undefined);
   };
 
   const isExpiringSoon = (expiryDate: string) => {
@@ -200,8 +205,8 @@ export default function MedicinesPage() {
                 <div className="space-y-2">
                   <Label htmlFor="supplier">Supplier</Label>
                   <Select
-                    value={formData.supplier?.toString()}
-                    onValueChange={(value) => setFormData({ ...formData, supplier: Number(value) })}
+                    value={selectedSupplierId?.toString()}
+                    onValueChange={(value) => setSelectedSupplierId(Number(value))}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select supplier" />
@@ -255,7 +260,14 @@ export default function MedicinesPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {medicines.map((medicine) => (
+              {medicines.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-8 text-gray-500">
+                    No medicines found. Click "Add Medicine" to get started.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                medicines.map((medicine) => (
                 <TableRow key={medicine.medicineId}>
                   <TableCell className="font-medium">{medicine.name}</TableCell>
                   <TableCell>{medicine.category}</TableCell>
@@ -289,7 +301,8 @@ export default function MedicinesPage() {
                     </div>
                   </TableCell>
                 </TableRow>
-              ))}
+              ))
+              )}
             </TableBody>
           </Table>
         </CardContent>

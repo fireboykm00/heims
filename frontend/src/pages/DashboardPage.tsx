@@ -131,11 +131,17 @@ export default function DashboardPage() {
       <div>
         <h2 className="text-xl font-semibold mb-4">Alerts & Notifications</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {alertCards.map((alert) => (
+          {alertCards.map((alert) => {
+            const borderColorMap: Record<string, string> = {
+              'text-red-600': '#dc2626',
+              'text-yellow-600': '#ca8a04',
+              'text-indigo-600': '#4f46e5',
+            };
+            return (
             <Card
               key={alert.title}
               className="border-l-4"
-              style={{ borderLeftColor: alert.color.replace("text-", "") }}
+              style={{ borderLeftColor: borderColorMap[alert.color] || '#6b7280' }}
             >
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <div>
@@ -154,7 +160,8 @@ export default function DashboardPage() {
                 <div className="text-2xl font-bold">{alert.value}</div>
               </CardContent>
             </Card>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

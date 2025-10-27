@@ -17,12 +17,12 @@ export default function Layout() {
   const navigate = useNavigate();
 
   const navigation = [
-    { name: 'Dashboard', href: '/', icon: LayoutDashboard },
-    { name: 'Medicines', href: '/medicines', icon: Pill },
-    { name: 'Equipment', href: '/equipment', icon: Package },
-    { name: 'Suppliers', href: '/suppliers', icon: Building2 },
-    { name: 'Orders', href: '/orders', icon: ShoppingCart },
-    { name: 'Maintenance', href: '/maintenance', icon: Wrench },
+    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+    { name: 'Medicines', href: '/dashboard/medicines', icon: Pill },
+    { name: 'Equipment', href: '/dashboard/equipment', icon: Package },
+    { name: 'Suppliers', href: '/dashboard/suppliers', icon: Building2 },
+    { name: 'Orders', href: '/dashboard/orders', icon: ShoppingCart },
+    { name: 'Maintenance', href: '/dashboard/maintenance', icon: Wrench },
   ];
 
   const handleLogout = () => {

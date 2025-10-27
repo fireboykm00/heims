@@ -23,6 +23,7 @@ export default function OrdersPage() {
     status: 'PENDING',
     orderDate: new Date().toISOString().split('T')[0],
   });
+  const [selectedSupplierId, setSelectedSupplierId] = useState<number | undefined>();
 
   useEffect(() => {
     loadData();
@@ -46,7 +47,9 @@ export default function OrdersPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const selectedSupplier = suppliers.find(s => s.supplierId === Number(formData.supplier));
+      const selectedSupplier = selectedSupplierId
+        ? suppliers.find(s => s.supplierId === selectedSupplierId)
+        : undefined;
       const data = { ...formData, supplier: selectedSupplier } as PurchaseOrder;
 
       if (editingOrder?.orderId) {
@@ -60,6 +63,7 @@ export default function OrdersPage() {
       loadData();
     } catch (error) {
       console.error('Failed to save order:', error);
+      alert('Failed to save order. Please try again.');
     }
   };
 
@@ -85,8 +89,8 @@ export default function OrdersPage() {
       deliveryDate: order.deliveryDate,
       status: order.status,
       notes: order.notes,
-      supplier: order.supplier?.supplierId,
     });
+    setSelectedSupplierId(order.supplier?.supplierId);
     setDialogOpen(true);
   };
 
@@ -97,6 +101,7 @@ export default function OrdersPage() {
       status: 'PENDING',
       orderDate: new Date().toISOString().split('T')[0],
     });
+    setSelectedSupplierId(undefined);
   };
 
   const getStatusColor = (status: string) => {
@@ -137,8 +142,8 @@ export default function OrdersPage() {
                 <div className="space-y-2">
                   <Label htmlFor="supplier">Supplier *</Label>
                   <Select
-                    value={formData.supplier?.toString()}
-                    onValueChange={(value) => setFormData({ ...formData, supplier: Number(value) })}
+                    value={selectedSupplierId?.toString()}
+                    onValueChange={(value) => setSelectedSupplierId(Number(value))}
                     required
                   >
                     <SelectTrigger>
@@ -275,7 +280,14 @@ export default function OrdersPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {orders.map((order) => (
+              {orders.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={9} className="text-center py-8 text-gray-500">
+                    No orders found. Click "Add Order" to get started.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                orders.map((order) => (
                 <TableRow key={order.orderId}>
                   <TableCell className="font-mono text-sm">{order.orderNumber}</TableCell>
                   <TableCell>{order.supplier?.name}</TableCell>
@@ -300,7 +312,8 @@ export default function OrdersPage() {
                     </div>
                   </TableCell>
                 </TableRow>
-              ))}
+              ))
+              )}
             </TableBody>
           </Table>
         </CardContent>

@@ -16,12 +16,15 @@ public class AuthController {
     private AuthService authService;
     
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
         try {
             LoginResponse response = authService.login(request);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(401)
+                    .body(new ErrorResponse("Invalid username or password"));
         }
     }
+    
+    private record ErrorResponse(String message) {}
 }

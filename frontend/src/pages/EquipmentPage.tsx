@@ -27,6 +27,7 @@ export default function EquipmentPage() {
     model: '',
     location: '',
   });
+  const [selectedSupplierId, setSelectedSupplierId] = useState<number | undefined>();
 
   useEffect(() => {
     loadData();
@@ -50,7 +51,9 @@ export default function EquipmentPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const selectedSupplier = suppliers.find(s => s.supplierId === Number(formData.supplier));
+      const selectedSupplier = selectedSupplierId
+        ? suppliers.find(s => s.supplierId === selectedSupplierId)
+        : undefined;
       const data = { ...formData, supplier: selectedSupplier } as Equipment;
 
       if (editingEquipment?.equipmentId) {
@@ -64,6 +67,7 @@ export default function EquipmentPage() {
       loadData();
     } catch (error) {
       console.error('Failed to save equipment:', error);
+      alert('Failed to save equipment. Please try again.');
     }
   };
 
@@ -91,8 +95,8 @@ export default function EquipmentPage() {
       purchaseDate: equip.purchaseDate,
       purchasePrice: equip.purchasePrice,
       nextMaintenanceDate: equip.nextMaintenanceDate,
-      supplier: equip.supplier?.supplierId,
     });
+    setSelectedSupplierId(equip.supplier?.supplierId);
     setDialogOpen(true);
   };
 
@@ -107,6 +111,7 @@ export default function EquipmentPage() {
       model: '',
       location: '',
     });
+    setSelectedSupplierId(undefined);
   };
 
   const getStatusColor = (status: string) => {
@@ -233,8 +238,8 @@ export default function EquipmentPage() {
                 <div className="space-y-2">
                   <Label htmlFor="supplier">Supplier</Label>
                   <Select
-                    value={formData.supplier?.toString()}
-                    onValueChange={(value) => setFormData({ ...formData, supplier: Number(value) })}
+                    value={selectedSupplierId?.toString()}
+                    onValueChange={(value) => setSelectedSupplierId(Number(value))}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select supplier" />
@@ -288,7 +293,14 @@ export default function EquipmentPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {equipment.map((equip) => (
+              {equipment.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-8 text-gray-500">
+                    No equipment found. Click "Add Equipment" to get started.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                equipment.map((equip) => (
                 <TableRow key={equip.equipmentId}>
                   <TableCell className="font-medium">{equip.name}</TableCell>
                   <TableCell>{equip.category}</TableCell>
@@ -313,7 +325,8 @@ export default function EquipmentPage() {
                     </div>
                   </TableCell>
                 </TableRow>
-              ))}
+              ))
+              )}
             </TableBody>
           </Table>
         </CardContent>

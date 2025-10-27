@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '@/services/api';
-import { Supplier } from '@/types';
+import type { Supplier } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -183,7 +183,14 @@ export default function SuppliersPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {suppliers.map((supplier) => (
+              {suppliers.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-8 text-gray-500">
+                    No suppliers found. Click "Add Supplier" to get started.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                suppliers.map((supplier) => (
                 <TableRow key={supplier.supplierId}>
                   <TableCell className="font-medium">{supplier.name}</TableCell>
                   <TableCell>{supplier.contactPerson || '-'}</TableCell>
@@ -222,7 +229,8 @@ export default function SuppliersPage() {
                     </div>
                   </TableCell>
                 </TableRow>
-              ))}
+              ))
+              )}
             </TableBody>
           </Table>
         </CardContent>

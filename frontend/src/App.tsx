@@ -15,11 +15,20 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return isAuthenticated ? <>{children}</> : <Navigate to="/login" />;
 }
 
+function PublicRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated } = useAuth();
+  return !isAuthenticated ? <>{children}</> : <Navigate to="/dashboard" />;
+}
+
 function App() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
-      <Route path="/login" element={<LoginPage />} />
+      <Route path="/login" element={
+        <PublicRoute>
+          <LoginPage />
+        </PublicRoute>
+      } />
       <Route
         path="/dashboard"
         element={
