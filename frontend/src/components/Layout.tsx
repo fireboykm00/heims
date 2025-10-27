@@ -8,6 +8,7 @@ import {
   Building2,
   ShoppingCart,
   Wrench,
+  Users,
   LogOut,
   Activity,
 } from 'lucide-react';
@@ -16,14 +17,20 @@ export default function Layout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  const navigation = [
-    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    { name: 'Medicines', href: '/dashboard/medicines', icon: Pill },
-    { name: 'Equipment', href: '/dashboard/equipment', icon: Package },
-    { name: 'Suppliers', href: '/dashboard/suppliers', icon: Building2 },
-    { name: 'Orders', href: '/dashboard/orders', icon: ShoppingCart },
-    { name: 'Maintenance', href: '/dashboard/maintenance', icon: Wrench },
+  const allNavigation = [
+    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, roles: ['ADMIN', 'PHARMACIST', 'TECHNICIAN'] },
+    { name: 'Medicines', href: '/dashboard/medicines', icon: Pill, roles: ['ADMIN', 'PHARMACIST'] },
+    { name: 'Equipment', href: '/dashboard/equipment', icon: Package, roles: ['ADMIN', 'TECHNICIAN'] },
+    { name: 'Suppliers', href: '/dashboard/suppliers', icon: Building2, roles: ['ADMIN', 'PHARMACIST'] },
+    { name: 'Orders', href: '/dashboard/orders', icon: ShoppingCart, roles: ['ADMIN', 'PHARMACIST'] },
+    { name: 'Maintenance', href: '/dashboard/maintenance', icon: Wrench, roles: ['ADMIN', 'TECHNICIAN'] },
+    { name: 'Users', href: '/dashboard/users', icon: Users, roles: ['ADMIN'] },
   ];
+
+  // Filter navigation based on user role
+  const navigation = allNavigation.filter(item => 
+    user?.role && item.roles.includes(user.role)
+  );
 
   const handleLogout = () => {
     logout();

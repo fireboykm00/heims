@@ -5,6 +5,7 @@ import com.hemis.repository.EquipmentRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -18,11 +19,13 @@ public class EquipmentController {
     private EquipmentRepository equipmentRepository;
     
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'TECHNICIAN')")
     public ResponseEntity<List<Equipment>> getAllEquipment() {
         return ResponseEntity.ok(equipmentRepository.findByActiveTrue());
     }
     
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TECHNICIAN')")
     public ResponseEntity<Equipment> getEquipmentById(@PathVariable Long id) {
         return equipmentRepository.findById(id)
                 .map(ResponseEntity::ok)
@@ -30,12 +33,14 @@ public class EquipmentController {
     }
     
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'TECHNICIAN')")
     public ResponseEntity<Equipment> createEquipment(@Valid @RequestBody Equipment equipment) {
         Equipment saved = equipmentRepository.save(equipment);
         return ResponseEntity.ok(saved);
     }
     
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TECHNICIAN')")
     public ResponseEntity<Equipment> updateEquipment(@PathVariable Long id, @Valid @RequestBody Equipment equipment) {
         if (!equipmentRepository.existsById(id)) {
             return ResponseEntity.notFound().build();
@@ -46,6 +51,7 @@ public class EquipmentController {
     }
     
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteEquipment(@PathVariable Long id) {
         return equipmentRepository.findById(id)
                 .map(equipment -> {
@@ -57,6 +63,7 @@ public class EquipmentController {
     }
     
     @GetMapping("/maintenance-due")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TECHNICIAN')")
     public ResponseEntity<List<Equipment>> getMaintenanceDue(@RequestParam(defaultValue = "30") Integer days) {
         LocalDate dueDate = LocalDate.now().plusDays(days);
         return ResponseEntity.ok(equipmentRepository.findMaintenanceDue(dueDate));

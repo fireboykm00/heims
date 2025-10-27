@@ -8,6 +8,7 @@ import EquipmentPage from "@/pages/EquipmentPage";
 import SuppliersPage from "@/pages/SuppliersPage";
 import OrdersPage from "@/pages/OrdersPage";
 import MaintenancePage from "@/pages/MaintenancePage";
+import UsersPage from "@/pages/UsersPage";
 import Layout from "@/components/Layout";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -43,6 +44,7 @@ function App() {
         <Route path="suppliers" element={<SuppliersPage />} />
         <Route path="orders" element={<OrdersPage />} />
         <Route path="maintenance" element={<MaintenancePage />} />
+        <Route path="users" element={<UsersPage />} />
       </Route>
     </Routes>
   );

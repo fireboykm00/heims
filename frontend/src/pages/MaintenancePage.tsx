@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/services/api';
 import { MaintenanceRecord, Equipment } from '@/types';
 import { Button } from '@/components/ui/button';
@@ -13,6 +14,7 @@ import { Plus, Edit, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function MaintenancePage() {
+  const { user } = useAuth();
   const [records, setRecords] = useState<MaintenanceRecord[]>([]);
   const [equipment, setEquipment] = useState<Equipment[]>([]);
   const [loading, setLoading] = useState(true);
@@ -298,9 +300,11 @@ export default function MaintenancePage() {
                       <Button size="sm" variant="outline" onClick={() => handleEdit(record)}>
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button size="sm" variant="destructive" onClick={() => handleDelete(record.recordId!)}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      {user?.role === 'ADMIN' && (
+                        <Button size="sm" variant="destructive" onClick={() => handleDelete(record.recordId!)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>

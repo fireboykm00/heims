@@ -78,4 +78,14 @@ export const api = {
     axiosInstance.put<MaintenanceRecord>(`/api/maintenance/${id}`, data),
   deleteMaintenanceRecord: (id: number) =>
     axiosInstance.delete(`/api/maintenance/${id}`),
+
+  // Users (Admin only)
+  getUsers: () => axiosInstance.get<any[]>("/api/users"),
+  getUser: (id: number) => axiosInstance.get<any>(`/api/users/${id}`),
+  createUser: (data: any) => axiosInstance.post<any>("/api/users", data),
+  updateUser: (id: number, data: any) =>
+    axiosInstance.put<any>(`/api/users/${id}`, data),
+  deleteUser: (id: number) => axiosInstance.delete(`/api/users/${id}`),
+  toggleUserActive: (id: number) =>
+    axiosInstance.patch<any>(`/api/users/${id}/toggle-active`),
 };

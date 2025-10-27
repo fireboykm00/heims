@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/services/api';
 import type { Supplier } from '@/types';
 import { Button } from '@/components/ui/button';
@@ -10,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Plus, Edit, Trash2, Mail, Phone, MapPin } from 'lucide-react';
 
 export default function SuppliersPage() {
+  const { user } = useAuth();
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -223,9 +225,11 @@ export default function SuppliersPage() {
                       <Button size="sm" variant="outline" onClick={() => handleEdit(supplier)}>
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button size="sm" variant="destructive" onClick={() => handleDelete(supplier.supplierId!)}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      {user?.role === 'ADMIN' && (
+                        <Button size="sm" variant="destructive" onClick={() => handleDelete(supplier.supplierId!)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { api } from '@/services/api';
 import { Medicine, Supplier } from '@/types';
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,7 @@ import { Plus, Edit, Trash2, AlertTriangle } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function MedicinesPage() {
+  const { user } = useAuth();
   const [medicines, setMedicines] = useState<Medicine[]>([]);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [loading, setLoading] = useState(true);
@@ -295,9 +297,11 @@ export default function MedicinesPage() {
                       <Button size="sm" variant="outline" onClick={() => handleEdit(medicine)}>
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button size="sm" variant="destructive" onClick={() => handleDelete(medicine.medicineId!)}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      {user?.role === 'ADMIN' && (
+                        <Button size="sm" variant="destructive" onClick={() => handleDelete(medicine.medicineId!)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>
